@@ -1,21 +1,44 @@
 #include <SFML/Window.hpp>
-#include<iostream>
-using namespace sf;
+#include <SFML/OpenGL.hpp>
+
 int main()
 {
-	sf::Window window(sf::VideoMode(800, 600), "My window",sf::Style::Close|sf::Style::Resize);
+	// create the window
+	sf::Window window(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default, sf::ContextSettings(32));
 	window.setVerticalSyncEnabled(true);
-	window.setFramerateLimit(60);
-	while (window.isOpen())
+
+	// load resources, initialize the OpenGL states, ...
+
+	// run the main loop
+	bool running = true;
+	while (running)
 	{
-		Event event1;
-		while (window.pollEvent(event1))
+		// handle events
+		sf::Event event;
+		while (window.pollEvent(event))
 		{
-			if (event1.type == Event::Closed)
-				window.close();
-			else if (event1.type == Event::Resized)
-				window.hasFocus();
+			if (event.type == sf::Event::Closed)
+			{
+				// end the program
+				running = false;
+			}
+			else if (event.type == sf::Event::Resized)
+			{
+				// adjust the viewport when the window is resized
+				glViewport(0, 0, event.size.width, event.size.height);
+			}
 		}
+
+		// clear the buffers
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// draw...
+
+		// end the current frame (internally swaps the front and back buffers)
+		window.display();
 	}
-		return 0;
+
+	// release resources...
+
+	return 0;
 }
