@@ -1,33 +1,65 @@
 #pragma once
-#include<vector>
+#include <vector>
+#include <functional>
 using namespace std;
+
 class Ship
 {
-	bool condition;//condition of the ship
-	vector<pair<bool, pair<int, int>>> parts;//positions and conditions of parts of the ship
-
 public:
-	Ship(initializer_list<pair<bool,pair<int,int>>> list = {});//constructor with list of arguments which has pairs of conditions and positions of parts
+	using pos = pair<int, int>;
+	using part = pair<bool, Ship::pos>;
 
-	bool get_condition();//return condition of the ship
-	void set_condition(bool condition);//set condition of the ship
-	void change_condition();//change condition of the ship on the opposite
+	enum class Orient { Horizontal, Vertical };
 
-	vector<pair<bool, pair<int, int>>> get_parts();//return all the parts of the ship
-	void set_parts(vector<pair<bool, pair<int, int>>> parts);//set parts of the ship
-
-	pair<bool, pair<int, int>> get_part(int index_of_part);//return a part of the ship by index
-	void set_part(int index_of_part, pair<bool, pair<int, int>> part);//set a part of the ship by index
-	void add_part(pair<bool, pair<int, int>> part);//add a part of the ship
+	/*
+	Copies the list of arguments to the Ship::parts
 	
-	bool get_condition_of_part(int index_of_part);//return condition of part by index
-	void set_condition_of_part(int index_of_part, bool condition);//set condition of part by index
-	void change_condition_of_part(int index_of_part);//change condition of part by index on the opposite
+	@param list of the parts of the ship
+	*/
+	Ship(initializer_list<Ship::part> list = {});
 	
-	pair<int, int> get_position_of_part(int index_of_part);//return position of part by index
-	void set_position_of_part(int index_of_part, pair<int, int>);//set position of part by index
+	/*
+	Returns the killed flag of the ship
 
-	int get_length();//return length of the ship
+	@return Ship::killed 
+	*/
+	bool is_killed();
 
-	~Ship();//destructor of the ship
+	void set_on_kill_handler(function<void(const vector<Ship::part>&)>  on_kill);
+	void set_on_injure_handler(function<void(const vector<Ship::part>&)> on_injure);
+
+	vector<Ship::part> get_parts();// return all the parts of the ship
+	void set_parts(vector<Ship::part> parts);// set parts of the ship
+	
+	void add_part (Ship::part part); // add "part" to "this->parts"
+	void delete_part (Ship::part part); // erase "part" from "this->parts"
+
+	// return the boolean value of "part" at the "position"
+	bool is_part_injured(Ship::pos pos_of_part);
+	
+	// set "part::first" to true of part at "pos_of_part"
+	void injure_part(Ship::pos pos_of_part);
+	
+	void rotate(Ship::pos center, bool clockwise);
+
+	int get_length();// return length of the ship
+
+	~Ship();// destructor of the ship
+private:
+	// retutn an iterator of Ship::parts that points to the "part" with specified "pos"
+	vector<Ship::part>::iterator get_part(Ship::pos pos);
+
+	Ship::Orient orient();
+
+	int& x(Ship::part& part) { return part.second.first; }
+	int& y(Ship::part& part) { return part.second.second; }
+	bool& injured(Ship::part& part) { return part.first; }
+
+	bool all_injured();
+
+	function<void(const Ship::pos&)> on_injure;
+	function<void(const vector<Ship::part>&)> on_kill;
+
+	bool killed;// killed of the ship
+	vector<Ship::part> parts;// positions and conditions of parts of the ship
 };
