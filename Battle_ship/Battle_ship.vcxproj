@@ -137,12 +137,14 @@
     <ClCompile Include="Field.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Ship.cpp" />
+    <ClCompile Include="Ship1.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Field.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Ship.h" />
+    <ClInclude Include="Ship1.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
