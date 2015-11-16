@@ -5,17 +5,32 @@ using namespace std;
 
 class Ship {
 public:
-	using pos = pair<int, int>;
-	using part = pair<bool, Ship::pos>;
+	struct Point
+	{
+		int x;
+		int y;
+	};
 
-	enum class Orient { Horizontal, Vertical };
+	struct Part
+	{
+		bool injured;
+		Ship::Point point;
+	};
+
+	enum class Direction
+	{
+		North,
+		East,
+		South,
+		West
+	};
 
 	/*
 	Copies the list of arguments to the Ship::parts
 
 	@param list of the parts of the ship
 	*/
-	Ship(initializer_list<Ship::part> list = {});
+	Ship(Point start_point, Ship::Direction);
 
 	/*
 	Returns the killed flag of the ship
