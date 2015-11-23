@@ -1,28 +1,24 @@
 #include "Field.h"
 #include <algorithm>
 
-Field::Field ()
+Model::Field::Field ()
 {
 }
 
 
-void Field::hit (const Point& p)
+void Model::Field::hit (const Point& p)
 {
 }
 
-void Field::place_ship (const Ship& ship)
+void Model::Field::place_ship (const Ship& ship)
 {
 }
 
-void Field::move_ship_by (const Point& p)
+Model::Field::~Field ()
 {
 }
 
-Field::~Field ()
-{
-}
-
-Field::Ship::Ship (Point start_point, Point end_point) : Ship()
+Model::Ship::Ship (Point start_point, Point end_point) : Ship()
 {
 	if (start_point.x == end_point.x)
 		for (auto i = start_point.y; i <= end_point.y; i++)
@@ -32,47 +28,48 @@ Field::Ship::Ship (Point start_point, Point end_point) : Ship()
 			this->parts.emplace_back(false, Point{i, start_point.x});
 }
 
-Field::Ship::Ship (const Parts& parts) :
+Model::Ship::Ship (const Parts& parts, const int& center) :
 	on_injure{nullptr},
 	on_kill{nullptr},
 	killed{false},
-	parts{parts}
+	parts{parts},
+	center{center}
 {
 }
 
-bool Field::Ship::is_killed ()
+bool Model::Ship::is_killed ()
 {
 	return this->killed;
 }
 
-void Field::Ship::set_on_kill_handler (std::function<void (const Parts&)> on_kill)
+void Model::Ship::set_on_kill_handler (std::function<void (const Parts&)> on_kill)
 {
 	this->on_kill = on_kill;
 }
 
-void Field::Ship::set_on_injure_handler (std::function<void (const Point&)> on_injure)
+void Model::Ship::set_on_injure_handler (std::function<void (const Point&)> on_injure)
 {
 	this->on_injure = on_injure;
 }
 
-bool Field::Ship::is_part_injured (const Point& point)
+bool Model::Ship::is_part_injured (const Point& point)
 {
 	auto part = this->get_part(point);
 
 	return part != this->parts.end() ? part->injured : false;
 }
 
-Field::Ship::Parts& Field::Ship::get_parts ()
+Model::Ship::Parts& Model::Ship::get_parts ()
 {
 	return this->parts;
 }
 
-void Field::Ship::set_parts (const Parts& p)
+void Model::Ship::set_parts (const Parts& p)
 {
 	this->parts = p;
 }
 
-void Field::Ship::injure_part (const Point& point)
+void Model::Ship::injure_part (const Point& point)
 {
 	auto part = this->get_part(point);
 
@@ -89,7 +86,7 @@ void Field::Ship::injure_part (const Point& point)
 	}
 }
 
-Field::Ship & Field::Ship::rotate (Point center_point, bool clockwise)
+Model::Ship & Model::Ship::rotate (const Point& center_point, bool clockwise)
 {
 	auto center = this->get_part(center_point);
 
@@ -113,7 +110,7 @@ Field::Ship & Field::Ship::rotate (Point center_point, bool clockwise)
 	return *this;
 }
 
-void Field::Ship::shift (const Point& p)
+void Model::Ship::shift (const Point& p)
 {
 	for (auto& part : this->parts)
 	{
@@ -122,7 +119,7 @@ void Field::Ship::shift (const Point& p)
 	}
 }
 
-Field::Ship::Parts::iterator Field::Ship::get_part (const Point& point)
+Model::Ship::Parts::iterator Model::Ship::get_part (const Point& point)
 {
 	return
 			std::find_if(
@@ -136,7 +133,7 @@ Field::Ship::Parts::iterator Field::Ship::get_part (const Point& point)
 			);
 }
 
-bool Field::Ship::all_injured ()
+bool Model::Ship::all_injured ()
 {
 	return
 			std::find_if_not(
@@ -150,7 +147,7 @@ bool Field::Ship::all_injured ()
 			) != this->parts.end();
 }
 
-Field::Ship::Orient Field::Ship::orient ()
+Model::Ship::Orient Model::Ship::orient ()
 {
 	return
 			this->parts.front().point.x == this->parts.back().point.x ?
